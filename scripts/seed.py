@@ -40,7 +40,25 @@ def main():
         super_email = os.environ.get("SUPERADMIN_EMAIL", "super@avanci.tn")
         super_pass = os.environ.get("SUPERADMIN_PASSWORD", "superadmin123")
 
+        # Migrate any pre-rebrand superadmin (e.g. super@wallait.tn) so the
+        # demo credentials stay reliable across renames + reseeds.
+        legacy_super = (
+            db.query(User)
+            .filter(User.role == UserRole.superadmin, User.email != super_email)
+            .first()
+        )
         existing_super = db.query(User).filter_by(email=super_email).first()
+        if existing_super and legacy_super:
+            db.delete(legacy_super)
+            db.commit()
+        elif legacy_super and not existing_super:
+            legacy_super.email = super_email
+            legacy_super.password_hash = hash_password(super_pass)
+            legacy_super.role = UserRole.superadmin
+            db.add(legacy_super)
+            db.commit()
+            existing_super = legacy_super
+
         if not existing_super:
             db.add(
                 User(
