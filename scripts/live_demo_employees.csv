@@ -1,0 +1,17 @@
+employee_code,full_name,department,salary_millimes,hire_date,past_advance_count,on_time_repayment_rate,dept_attrition_rate,performance_score,has_active_advance,days_since_last_advance,existing_debt_ratio,opted_in_wallet
+DEMO-001,Ines Nasri,Finance,685055,2026-01-05,0,0.9052,0.1111,2.5,1,365,0.5681,1
+DEMO-002,Afef Trabelsi,Sales,755733,2022-05-07,6,0.8809,0.2253,2.0,0,250,0.0003,1
+DEMO-003,Sawsen Tlili,Logistics,596387,2025-12-31,1,0.9029,0.18,2.0,0,345,0.057,1
+DEMO-004,Amira Dridi,Support,758742,2022-06-29,3,0.7416,0.1383,2.5,0,324,0.5,0
+DEMO-005,Sawsen Oueslati,Logistics,820348,2023-03-17,5,0.7745,0.0863,2.5,0,106,0.5,1
+DEMO-006,Tarek Mansour,Support,835873,2024-10-27,0,0.888,0.2212,2.5,1,365,0.3761,1
+DEMO-007,Bilel Boukthir,Support,871618,2022-08-04,7,0.8787,0.2119,2.5,0,312,0.0624,1
+DEMO-008,Rym Gharbi,Logistics,630205,2025-10-03,0,0.9814,0.137,2.5,0,365,0.5,1
+DEMO-009,Sawsen Gharbi,Engineering,610984,2026-01-19,0,0.8488,0.1191,2.0,1,365,0.3955,1
+DEMO-010,Firas Zouari,Finance,602470,2009-09-30,20,0.6807,0.0714,2.5,1,27,0.6043,0
+DEMO-011,Amira Belhadj,Finance,587467,2026-02-15,0,0.7831,0.0581,2.5,0,365,0.1654,1
+DEMO-012,Nadia Zouari,Support,759033,2026-01-22,0,0.8733,0.2052,2.0,1,365,0.2752,1
+DEMO-013,Rym Meddeb,Engineering,737766,2025-12-06,0,0.9151,0.1571,2.0,0,365,0.0076,1
+DEMO-014,Leila Ayari,Logistics,654055,2025-10-09,0,0.859,0.1364,2.5,0,365,0.0946,1
+DEMO-015,Aymen Chahed,Support,646412,2024-04-19,3,0.8932,0.148,2.5,0,309,0.029,1
+DEMO-016,Karim Belhadj,Logistics,784414,2021-10-14,8,0.8456,0.1558,2.5,0,209,0.3556,1

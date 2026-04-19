@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Mizania design tokens — light + dark (product spec)
+  Status soft backgrounds have dark-mode equivalents for contrast.
+*/
+
+@layer base {
+  :root {
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 173 80% 24%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 214 32% 91%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 166 76% 90%;
+    --accent-foreground: 173 61% 22%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 173 80% 24%;
+    --radius: 0.75rem;
+
+    --success: 142 71% 36%;
+    --success-soft: 142 76% 92%;
+    --success-fg: 144 61% 20%;
+
+    --warning: 32 95% 44%;
+    --warning-soft: 48 96% 89%;
+    --warning-fg: 21 90% 30%;
+
+    --danger: 0 72% 51%;
+    --danger-soft: 0 93% 94%;
+    --danger-fg: 0 63% 31%;
+
+    --info: 221 83% 53%;
+    --info-soft: 214 95% 93%;
+    --info-fg: 224 64% 33%;
+
+    --row-danger-soft: 0 93% 96%;
+    --badge-danger-bg: 0 93% 94%;
+    --badge-danger-fg: 0 63% 31%;
+  }
+
+  .dark {
+    --background: 222 47% 6%;
+    --foreground: 210 40% 98%;
+    --card: 217 33% 11%;
+    --card-foreground: 210 40% 98%;
+    --popover: 217 33% 11%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 173 58% 39%;
+    --primary-foreground: 166 76% 97%;
+    --secondary: 217 19% 27%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 222 47% 14%;
+    --muted-foreground: 215 20% 75%;
+    --accent: 173 40% 18%;
+    --accent-foreground: 166 76% 90%;
+    --border: 217 19% 27%;
+    --input: 217 19% 27%;
+    --ring: 173 58% 45%;
+
+    --success: 142 70% 45%;
+    --success-soft: 144 61% 12%;
+    --success-fg: 142 69% 80%;
+
+    --warning: 38 92% 50%;
+    --warning-soft: 32 45% 14%;
+    --warning-fg: 48 96% 88%;
+
+    --danger: 0 72% 51%;
+    --danger-soft: 0 35% 16%;
+    --danger-fg: 0 86% 88%;
+
+    --info: 217 91% 60%;
+    --info-soft: 224 47% 16%;
+    --info-fg: 214 95% 93%;
+
+    --row-danger-soft: 0 35% 12%;
+    --badge-danger-bg: 0 35% 18%;
+    --badge-danger-fg: 0 86% 90%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+}
