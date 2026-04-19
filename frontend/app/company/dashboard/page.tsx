@@ -85,7 +85,7 @@ export default function CompanyDashboardPage() {
           AvancI company dashboard
         </h1>
         <p className="mt-2 max-w-2xl text-muted-foreground">
-          Welcome back—here is a concise view of imports, eligibility coverage, requests, and
+          Welcome back. Here is a concise view of imports, eligibility coverage, requests, and
           payroll deductions for your organization.
         </p>
       </div>
@@ -106,7 +106,7 @@ export default function CompanyDashboardPage() {
           hint={
             lastImport?.last_scored_at
               ? `Last scored ${formatDateTime(lastImport.last_scored_at)}`
-              : "No employees yet — upload a CSV"
+              : "No employees yet. Upload a CSV."
           }
         />
         <KpiCard
@@ -136,7 +136,8 @@ export default function CompanyDashboardPage() {
             <ul className="space-y-3 text-sm text-muted-foreground">
               {data.paid.slice(0, 8).map((r) => (
                 <li key={r.id}>
-                  <span className="font-medium text-foreground">{r.employee_name}</span> —{" "}
+                  <span className="font-medium text-foreground">{r.employee_name}</span>
+                  {" · "}
                   {formatTndCompact(r.requested_amount_millimes)}
                   <br />
                   <span className="text-xs">

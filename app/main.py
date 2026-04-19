@@ -58,13 +58,13 @@ def root():
 </head>
 <body>
   <p class="ok">API is running on this port (8000).</p>
-  <p>This URL is the <strong>backend only</strong> — JSON + Swagger. It is not the web app.</p>
+  <p>This URL is the <strong>backend only</strong>: JSON + Swagger. It is not the web app.</p>
   <ul>
     <li><a href="/docs">Open API docs (Swagger)</a></li>
     <li><a href="/health">Health check</a> (<code>GET /health</code>)</li>
   </ul>
-  <p><strong>Avanci UI (login, dashboards):</strong> run <code>npm run dev</code> in <code>frontend/</code>
-     — then open <a href="http://localhost:3000">http://localhost:3000</a>.
+  <p><strong>Avanci UI (login, dashboards):</strong> run <code>npm run dev</code> in <code>frontend/</code>,
+     then open <a href="http://localhost:3000">http://localhost:3000</a>.
      The UI calls this API at <code>http://127.0.0.1:8000</code> by default.</p>
 </body>
 </html>"""

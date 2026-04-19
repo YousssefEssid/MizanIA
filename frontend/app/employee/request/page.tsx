@@ -194,7 +194,7 @@ export default function EmployeeRequestPage() {
               />
               {overCap ? (
                 <p className="text-xs text-[hsl(var(--badge-danger-fg))]">
-                  Over the recommended cap of {formatTndCompact(maxAmount)} — HR may reject.
+                  Over the recommended cap of {formatTndCompact(maxAmount)}. HR may reject.
                 </p>
               ) : (
                 <p className="text-xs text-muted-foreground">
@@ -241,7 +241,7 @@ export default function EmployeeRequestPage() {
       {result ? (
         <Card className="border-primary/30 bg-primary/5">
           <CardHeader>
-            <CardTitle>Submitted — request #{result.request_id}</CardTitle>
+            <CardTitle>Submitted (request #{result.request_id})</CardTitle>
             <CardDescription>Awaiting HR decision.</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-2 text-sm">

@@ -113,7 +113,7 @@ export default function CompanyRepaymentsPage() {
           Payroll deductions
         </h1>
         <p className="mt-2 max-w-2xl text-muted-foreground">
-          Per-employee total of advances paid in the selected month — hand this over to payroll for
+          Per-employee total of advances paid in the selected month. Hand this over to payroll for
           end-of-month deductions.
         </p>
       </div>

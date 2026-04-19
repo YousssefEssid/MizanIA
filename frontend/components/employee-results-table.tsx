@@ -288,7 +288,7 @@ export function EmployeeResultsTable({
                     </TableCell>
                     <TableCell>{formatTndCompact(max_amount)}</TableCell>
                     <TableCell className="text-xs text-muted-foreground">
-                      {row.last_scored_at ? formatDateTime(row.last_scored_at) : "—"}
+                      {row.last_scored_at ? formatDateTime(row.last_scored_at) : "N/A"}
                     </TableCell>
                     <TableCell className="whitespace-nowrap">
                       {eligibilityBadge(eligibility)}
@@ -348,7 +348,7 @@ export function EmployeeResultsTable({
                     label="HR override %"
                     value={
                       selected.policy_max_pct === null || selected.policy_max_pct === undefined
-                        ? "— (per row)"
+                        ? "N/A (per row)"
                         : formatPct(selected.policy_max_pct)
                     }
                   />
@@ -357,7 +357,7 @@ export function EmployeeResultsTable({
                     value={
                       selected.global_policy_max_pct === null ||
                       selected.global_policy_max_pct === undefined
-                        ? "—"
+                        ? "N/A"
                         : formatPct(selected.global_policy_max_pct)
                     }
                   />
@@ -374,7 +374,7 @@ export function EmployeeResultsTable({
                     value={
                       selected.last_scored_at
                         ? formatDateTime(selected.last_scored_at)
-                        : "Never — run \"Score all\" above"
+                        : "Never. Run \"Score all\" above."
                     }
                   />
                   <Row

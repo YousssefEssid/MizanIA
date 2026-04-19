@@ -251,7 +251,7 @@ export default function CompanyRequestsPage() {
                               </Button>
                             </div>
                           ) : (
-                            <span className="text-xs text-muted-foreground">—</span>
+                            <span className="text-xs text-muted-foreground">N/A</span>
                           )}
                         </TableCell>
                       </TableRow>
@@ -270,7 +270,7 @@ export default function CompanyRequestsPage() {
             <SheetTitle>Reject request</SheetTitle>
             <SheetDescription>
               {rejectTarget
-                ? `#${rejectTarget.id} — ${rejectTarget.employee_name} · ${formatTndCompact(rejectTarget.requested_amount_millimes)}`
+                ? `#${rejectTarget.id}: ${rejectTarget.employee_name} · ${formatTndCompact(rejectTarget.requested_amount_millimes)}`
                 : ""}
             </SheetDescription>
           </SheetHeader>

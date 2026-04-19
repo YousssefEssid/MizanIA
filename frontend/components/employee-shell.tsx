@@ -35,7 +35,7 @@ export function EmployeeShell({
                 <div className="hidden text-right text-xs leading-tight sm:block">
                   <p className="font-medium text-foreground">{user.email}</p>
                   <p className="text-muted-foreground">
-                    Employee #{user.employee_profile_id ?? "—"}
+                    Employee #{user.employee_profile_id ?? "N/A"}
                   </p>
                 </div>
               ) : null}

@@ -6,7 +6,7 @@ import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
 /**
- * Navbar dark mode switch — toggles explicit light/dark.
+ * Navbar dark mode switch: toggles explicit light/dark.
  * Uses `resolvedTheme` so "system" preference still shows the correct state.
  */
 export function NavbarThemeToggle({ className }: { className?: string }) {

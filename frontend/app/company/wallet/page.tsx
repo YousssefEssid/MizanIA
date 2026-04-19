@@ -119,14 +119,14 @@ export default function CompanyWalletPage() {
           <CardContent className="text-sm text-muted-foreground">
             {wallet
               ? `Wallet #${wallet.wallet_id} · Employer #${wallet.employer_id}`
-              : "—"}
+              : "N/A"}
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
             <CardTitle>Fund wallet</CardTitle>
             <CardDescription>
-              Demo top-up — credits the employer wallet directly. In production this would be a bank
+              Demo top-up: credits the employer wallet directly. In production this would be a bank
               webhook.
             </CardDescription>
           </CardHeader>
@@ -206,7 +206,7 @@ export default function CompanyWalletPage() {
       <Card>
         <CardHeader>
           <CardTitle>Recent ledger entries</CardTitle>
-          <CardDescription>Newest first — debits leave the wallet, credits enter.</CardDescription>
+          <CardDescription>Newest first. Debits leave the wallet; credits enter.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
@@ -231,7 +231,7 @@ export default function CompanyWalletPage() {
                 ) : ledger.entries.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center text-muted-foreground">
-                      No entries yet — credit the wallet to start the chain.
+                      No entries yet. Credit the wallet to start the chain.
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -249,7 +249,7 @@ export default function CompanyWalletPage() {
                         {formatTndCompact(e.amount_millimes)}
                       </TableCell>
                       <TableCell className="text-xs text-muted-foreground">
-                        {e.related_request_id ? `#${e.related_request_id}` : "—"}
+                        {e.related_request_id ? `#${e.related_request_id}` : "N/A"}
                       </TableCell>
                       <TableCell className="text-xs text-muted-foreground">
                         {formatDateTime(e.created_at)}

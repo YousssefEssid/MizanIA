@@ -45,7 +45,7 @@ export function CompanyShell({
                 <div className="hidden text-right text-xs leading-tight md:block">
                   <p className="font-medium text-foreground">{user.email}</p>
                   <p className="text-muted-foreground">
-                    HR · Employer #{user.employer_id ?? "—"}
+                    HR · Employer #{user.employer_id ?? "N/A"}
                   </p>
                 </div>
               ) : null}

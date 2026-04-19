@@ -9,7 +9,7 @@ Two public functions:
 
   generate_sample_employees(n=100, seed=99) -> pd.DataFrame
       HR-uploadable CSV rows (employee_code, full_name, department, …).
-      No ML label — mirrors the columns expected by csv_service.py.
+      No ML label (mirrors the columns expected by csv_service.py).
 
   generate_live_demo_employees(n=16, ...) -> pd.DataFrame
       10–20-row batch for live pitch: salaries ~ N(mean_salary_tnd, std) clipped,
@@ -83,7 +83,7 @@ DEPT_TIER_PROBS = {
     "Finance":     [0.10, 0.45, 0.45],
 }
 
-# TND salary ranges per tier (min, max) — stored as millimes in DB
+# TND salary ranges per tier (min, max), stored as millimes in DB
 SALARY_RANGES_TND = {
     0: (800,  1_500),   # low
     1: (1_500, 3_500),  # mid
@@ -178,7 +178,7 @@ def _build_row(
 
     # days_since_last_advance
     if past_advance_count == 0:
-        days_since_last_advance = 365  # cap — never used
+        days_since_last_advance = 365  # cap; never used
     elif has_active_advance:
         days_since_last_advance = int(rng.integers(1, 45))
     else:
@@ -326,7 +326,7 @@ def generate_sample_employees(n: int = 100, seed: int = 99) -> pd.DataFrame:
       days_since_last_advance, has_active_advance, dept_attrition_rate,
       existing_debt_ratio, opted_in_wallet
 
-    No ML label column — HR upload doesn't know ground truth.
+    No ML label column: HR upload doesn't know ground truth.
     """
     today = date.today()
     rng = _rng(seed)

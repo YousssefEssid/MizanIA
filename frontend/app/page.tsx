@@ -32,7 +32,7 @@ export default function HomePage() {
           Welcome to AvancI
         </h1>
         <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
-          A structured salary advance platform for companies and employees—clean workflows for HR and
+          A structured salary advance platform for companies and employees, with clean workflows for HR and
           finance, transparent requests for staff, and full traceability across your organization.
         </p>
         <div className="mt-10 flex flex-wrap gap-3">

@@ -26,7 +26,7 @@ const wordmark = Dancing_Script({
 export const metadata: Metadata = {
   title: { default: "AvancI", template: "%s · AvancI" },
   description:
-    "AvancI — salary advance management for companies and employees. Modern, trustworthy, operational.",
+    "AvancI: salary advance management for companies and employees. Modern, trustworthy, operational.",
   applicationName: "AvancI",
 };
 

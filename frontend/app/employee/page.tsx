@@ -83,7 +83,7 @@ export default function EmployeeHomePage() {
       <div>
         <h1 className="font-heading text-2xl font-semibold tracking-tight">Welcome to AvancI</h1>
         <p className="mt-2 text-muted-foreground">
-          Your salary advance workspace—see what you can request, what is in flight, and your wallet
+          Your salary advance workspace: see what you can request, what is in flight, and your wallet
           balance.
         </p>
       </div>
@@ -146,7 +146,7 @@ export default function EmployeeHomePage() {
         <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
             <p className="font-heading text-3xl tabular-nums text-foreground">
-              {wallet ? formatTndCompact(wallet.wallet.balance_millimes) : walletError ? "—" : "…"}
+              {wallet ? formatTndCompact(wallet.wallet.balance_millimes) : walletError ? "N/A" : "…"}
             </p>
             <p className="text-xs text-muted-foreground">
               {wallet
@@ -200,7 +200,7 @@ export default function EmployeeHomePage() {
                           {formatTndCompact(e.amount_millimes)}
                         </TableCell>
                         <TableCell className="text-xs text-muted-foreground">
-                          {e.related_request_id ? `#${e.related_request_id}` : "—"}
+                          {e.related_request_id ? `#${e.related_request_id}` : "N/A"}
                         </TableCell>
                         <TableCell className="text-xs text-muted-foreground">
                           {formatDateTime(e.created_at)}

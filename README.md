@@ -2,11 +2,11 @@
 
 Earned-wage / advance demo: HR CSV upload, lightweight boosted-tree **% cap** model, hash-chained **internal wallets**, role-based JWT auth, HR policy thresholds.
 
-- `app/`, `ml/`, `scripts/` — FastAPI backend + XGBoost model + seed script.
-- `frontend/` — Next.js 15 (App Router, Tailwind, shadcn) AvancI console + employee portal,
+- `app/`, `ml/`, `scripts/`: FastAPI backend + XGBoost model + seed script.
+- `frontend/`: Next.js 15 (App Router, Tailwind, shadcn) AvancI console + employee portal,
   wired to the API.
 
-### Ports (two processes — not a bug)
+### Ports (two processes; not a bug)
 
 | What | Port | Command / URL |
 |------|------|----------------|
@@ -29,7 +29,7 @@ python -m venv .venv
 - API docs: `http://127.0.0.1:8000/docs`
 - Amounts are **integer millimes** (1.000 TND = `1000` millimes).
 - **SQLite path:** By default the API uses **`avanci.db` in the repo root** (next to `app/`), not "current working directory". That way starting Uvicorn from another folder still uses the same database and seeded users. Override with `DATABASE_URL` in `.env` if needed.
-- **Schema migration:** `init_db()` runs a tiny SQLite-only migration that adds the `policy_max_pct` column on `employee_profiles` and the `global_policy_max_pct` column on `employer_policies` if they're missing — no Alembic needed for the demo.
+- **Schema migration:** `init_db()` runs a tiny SQLite-only migration that adds the `policy_max_pct` column on `employee_profiles` and the `global_policy_max_pct` column on `employer_policies` if they're missing. No Alembic needed for the demo.
 
 ## Frontend quick start (Windows)
 
@@ -57,9 +57,9 @@ The frontend talks to the FastAPI backend via `NEXT_PUBLIC_API_BASE_URL` (defaul
 
 HR admins can set, per employer, three layers that constrain the model:
 
-- **Global cap (`global_policy_max_pct`)** — optional employer-wide ceiling that applies to **every** employee.
-- **Per-employee cap (`policy_max_pct`)** — optional row override. Capped at `min(model_recommendation, global_policy_max_pct)`.
-- **Monthly cut-off day (`request_cutoff_day_of_month`)** — employees cannot create new requests after this day of the month.
+- **Global cap (`global_policy_max_pct`):** optional employer-wide ceiling that applies to **every** employee.
+- **Per-employee cap (`policy_max_pct`):** optional row override. Capped at `min(model_recommendation, global_policy_max_pct)`.
+- **Monthly cut-off day (`request_cutoff_day_of_month`):** employees cannot create new requests after this day of the month.
 
 Effective cap used at request time (`app/services/ml_service.py::score_request`):
 
@@ -73,8 +73,8 @@ effective_max_pct = min(
 
 Endpoints:
 
-- `GET /hr/policy` · `PUT /hr/policy` — `{ request_cutoff_day_of_month, global_policy_max_pct }`
-- `PUT /hr/employees/{id}/policy` — `{ policy_max_pct }` (validated against the lower of model and global)
+- `GET /hr/policy` · `PUT /hr/policy`: `{ request_cutoff_day_of_month, global_policy_max_pct }`
+- `PUT /hr/employees/{id}/policy`: `{ policy_max_pct }` (validated against the lower of model and global)
 - `GET /hr/employees` returns each row enriched with `global_policy_max_pct` so the UI can show the same effective cap everywhere.
 
 The AvancI UI exposes these in `/company/policy` (single **Employer-wide policy** card with cut-off + global %, plus a per-row table). Employee surfaces (`/employee`, `/employee/request`) display the effective cap and, when the cap is below the model, surface why ("Model X% · Global HR Y% · Your HR Z%").

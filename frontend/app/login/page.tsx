@@ -31,7 +31,7 @@ export default function LoginPage() {
         <div>
           <h1 className="font-heading text-2xl font-semibold tracking-tight">Sign in to AvancI</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Company administrators, HR/finance users, and employees use the same entry point—your
+            Company administrators, HR/finance users, and employees use the same entry point: your
             workspace opens after authentication.
           </p>
         </div>

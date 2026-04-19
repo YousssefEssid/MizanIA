@@ -237,7 +237,8 @@ export default function CompanyUploadPage() {
             <p className="text-sm text-muted-foreground">
               {fileSummary.kind === "csv" ? (
                 <>
-                  <span className="font-medium text-foreground">{fileSummary.filename}</span> —{" "}
+                  <span className="font-medium text-foreground">{fileSummary.filename}</span>
+                  {": "}
                   {fileSummary.dataRows} data row{fileSummary.dataRows === 1 ? "" : "s"},{" "}
                   {fileSummary.uniqueCodes} unique code
                   {fileSummary.uniqueCodes === 1 ? "" : "s"}
@@ -248,8 +249,8 @@ export default function CompanyUploadPage() {
                 </>
               ) : (
                 <>
-                  <span className="font-medium text-foreground">{fileSummary.filename}</span> — Excel
-                  file; row counts and duplicate handling are applied when you import.
+                  <span className="font-medium text-foreground">{fileSummary.filename}</span> (Excel
+                  file). Row counts and duplicate handling are applied when you import.
                 </>
               )}
             </p>
@@ -265,7 +266,8 @@ export default function CompanyUploadPage() {
           {outcome ? (
             <div className="rounded-md border border-primary/30 bg-primary/5 px-3 py-2 text-sm">
               <p className="text-foreground">
-                Imported <span className="font-medium">{outcome.filename}</span> — created{" "}
+                Imported <span className="font-medium">{outcome.filename}</span>
+                {": created "}
                 <span className="font-medium">{outcome.created}</span>, updated{" "}
                 <span className="font-medium">{outcome.updated}</span>, errors{" "}
                 <span className="font-medium">{outcome.errors.length}</span>.
@@ -301,7 +303,7 @@ export default function CompanyUploadPage() {
         <CardHeader>
           <CardTitle>Imported roster ({employees.length})</CardTitle>
           <CardDescription>
-            Raw employee data currently stored — no model output here. Eligibility lives in the
+            Raw employee data currently stored (no model output here). Eligibility lives in the
             Results tab.
           </CardDescription>
         </CardHeader>
@@ -327,7 +329,7 @@ export default function CompanyUploadPage() {
                 ) : employees.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center text-muted-foreground">
-                      No employees yet — upload a CSV to get started.
+                      No employees yet. Upload a CSV to get started.
                     </TableCell>
                   </TableRow>
                 ) : (

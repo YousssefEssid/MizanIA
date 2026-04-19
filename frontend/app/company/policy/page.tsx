@@ -299,7 +299,7 @@ export default function CompanyPolicyPage() {
                 <span className="font-medium text-foreground">
                   {policy?.global_policy_max_pct != null
                     ? formatPct(policy.global_policy_max_pct)
-                    : "— (no cap)"}
+                    : "N/A (no cap)"}
                 </span>
               </p>
             </div>
@@ -350,7 +350,7 @@ export default function CompanyPolicyPage() {
                 ) : employees.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={7} className="text-center text-muted-foreground">
-                      No employees yet — upload a roster first.
+                      No employees yet. Upload a roster first.
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -436,7 +436,7 @@ export default function CompanyPolicyPage() {
                         </TableCell>
                         <TableCell className="text-right tabular-nums">
                           {eff === null ? (
-                            <span className="text-muted-foreground">—</span>
+                            <span className="text-muted-foreground">N/A</span>
                           ) : (
                             <div className="flex flex-col items-end leading-tight">
                               <span className="font-medium">{formatPct(eff)}</span>

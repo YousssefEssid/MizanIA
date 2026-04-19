@@ -42,7 +42,7 @@ def _email_taken(db: Session, email: str) -> bool:
 def ensure_employee_logins(db: Session, employer_id: int, hr_email: str) -> dict:
     """
     For every EmployeeProfile under employer_id, create an employee User if none exists yet.
-    Does not commit — caller commits.
+    Does not commit; caller commits.
     """
     domain = _domain_from_hr_email(hr_email)
     pwd_hash = hash_password(DEMO_EMPLOYEE_PASSWORD)

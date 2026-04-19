@@ -19,7 +19,7 @@ export function formatTnd(
   millimes: number | null | undefined,
   opts: { decimals?: number; suffix?: string } = {},
 ): string {
-  if (millimes === null || millimes === undefined) return "—";
+  if (millimes === null || millimes === undefined) return "N/A";
   const decimals = opts.decimals ?? 3;
   const suffix = opts.suffix ?? "TND";
   const tnd = millimesToTnd(millimes);
@@ -32,18 +32,18 @@ export function formatTnd(
 
 /** Compact display: "1,250 TND" with no decimals when amount is whole-TND. */
 export function formatTndCompact(millimes: number | null | undefined): string {
-  if (millimes === null || millimes === undefined) return "—";
+  if (millimes === null || millimes === undefined) return "N/A";
   const isWhole = millimes % 1000 === 0;
   return formatTnd(millimes, { decimals: isWhole ? 0 : 3 });
 }
 
 export function formatPct(pct: number | null | undefined, decimals = 1): string {
-  if (pct === null || pct === undefined || Number.isNaN(pct)) return "—";
+  if (pct === null || pct === undefined || Number.isNaN(pct)) return "N/A";
   return `${pct.toFixed(decimals)}%`;
 }
 
 export function formatDate(iso: string | null | undefined): string {
-  if (!iso) return "—";
+  if (!iso) return "N/A";
   try {
     const d = new Date(iso);
     if (Number.isNaN(d.getTime())) return iso;
@@ -58,7 +58,7 @@ export function formatDate(iso: string | null | undefined): string {
 }
 
 export function formatDateTime(iso: string | null | undefined): string {
-  if (!iso) return "—";
+  if (!iso) return "N/A";
   try {
     const d = new Date(iso);
     if (Number.isNaN(d.getTime())) return iso;
