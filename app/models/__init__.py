@@ -3,6 +3,7 @@ from app.models.employer import Employer
 from app.models.employee import EmployeeProfile
 from app.models.advance import AdvanceRequest, AdvanceStatus
 from app.models.wallet import Wallet, LedgerEntry, WalletOwnerType, LedgerDirection
+from app.models.policy import EmployerPolicy
 
 __all__ = [
     "User",
@@ -15,4 +16,5 @@ __all__ = [
     "LedgerEntry",
     "WalletOwnerType",
     "LedgerDirection",
+    "EmployerPolicy",
 ]

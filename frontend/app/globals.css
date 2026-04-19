@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /*
-  Mizania design tokens — light + dark (product spec)
+  Avanci design tokens — light + dark (product spec)
   Status soft backgrounds have dark-mode equivalents for contrast.
 */
 
@@ -47,6 +47,9 @@
     --row-danger-soft: 0 93% 96%;
     --badge-danger-bg: 0 93% 94%;
     --badge-danger-fg: 0 63% 31%;
+
+    /* Wordmark accent (#2596be – cyan-blue). */
+    --brand-olive: 196 67% 44%;
   }
 
   .dark {
@@ -87,6 +90,9 @@
     --row-danger-soft: 0 35% 12%;
     --badge-danger-bg: 0 35% 18%;
     --badge-danger-fg: 0 86% 90%;
+
+    /* Brighter cyan-blue in dark mode for legibility. */
+    --brand-olive: 196 70% 60%;
   }
 
   * {

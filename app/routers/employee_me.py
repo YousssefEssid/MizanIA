@@ -1,3 +1,4 @@
+from datetime import date
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -5,7 +6,15 @@ from sqlalchemy.orm import Session
 
 from app.db import get_db
 from app.deps import require_roles
-from app.models import AdvanceRequest, AdvanceStatus, EmployeeProfile, User, UserRole, WalletOwnerType
+from app.models import (
+    AdvanceRequest,
+    AdvanceStatus,
+    EmployeeProfile,
+    EmployerPolicy,
+    User,
+    UserRole,
+    WalletOwnerType,
+)
 from app.schemas.employee import AdvanceCreate, AdvanceOut, ProfileOut, WalletOut
 from app.services.ml_service import score_request
 from app.services.transfer_service import get_or_create_wallet
@@ -25,7 +34,24 @@ def _profile(db: Session, user: User) -> EmployeeProfile:
 
 @router.get("/profile", response_model=ProfileOut)
 def my_profile(db: Annotated[Session, Depends(get_db)], user: Emp):
-    return _profile(db, user)
+    p = _profile(db, user)
+    pol = None
+    cutoff = None
+    if p.employer_id:
+        pol = db.query(EmployerPolicy).filter_by(employer_id=p.employer_id).first()
+        cutoff = pol.request_cutoff_day_of_month if pol else None
+    global_cap = pol.global_policy_max_pct if pol else None
+
+    return ProfileOut(
+        id=p.id,
+        full_name=p.full_name,
+        department=p.department,
+        salary_millimes=p.salary_millimes,
+        recommended_max_pct=p.recommended_max_pct,
+        policy_max_pct=p.policy_max_pct,
+        global_policy_max_pct=global_cap,
+        request_cutoff_day_of_month=cutoff,
+    )
 
 
 @router.get("/wallet")
@@ -84,7 +110,26 @@ def create_advance(
     p = _profile(db, user)
     if not p.opted_in_wallet:
         raise HTTPException(status_code=400, detail="Wallet not enabled for this profile")
-    max_pct, rec_amt, eligible, note = score_request(p, body.amount_millimes, body.payout_date)
+
+    policy = (
+        db.query(EmployerPolicy).filter_by(employer_id=p.employer_id).first()
+        if p.employer_id
+        else None
+    )
+    cutoff = policy.request_cutoff_day_of_month if policy else None
+    if cutoff is not None and date.today().day > cutoff:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"Advance requests are closed for this month "
+                f"(cut-off was day {cutoff}). Try again next month."
+            ),
+        )
+
+    gpol = policy.global_policy_max_pct if policy else None
+    max_pct, rec_amt, eligible, note = score_request(
+        p, body.amount_millimes, body.payout_date, global_policy_max_pct=gpol
+    )
     req = AdvanceRequest(
         employee_profile_id=p.id,
         requested_amount_millimes=body.amount_millimes,

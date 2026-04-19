@@ -1,10 +1,11 @@
 .venv/
 __pycache__/
 *.py[cod]
-wallait.db
+avanci.db
 .env
 .pytest_cache/
 .tools/
 frontend/node_modules/
 frontend/.next/
 frontend/.env*.local
+frontend/tsconfig.tsbuildinfo

@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/table";
 import * as api from "@/lib/api";
 import type { MyAdvance, MyWalletResponse, Profile } from "@/lib/api";
+import { effectiveMaxPct } from "@/lib/policy";
 import { formatTndCompact, formatPct, formatDate, formatDateTime } from "@/lib/money";
 
 function statusBadge(status: MyAdvance["status"]) {
@@ -68,7 +69,7 @@ export default function EmployeeHomePage() {
     };
   }, []);
 
-  const maxPct = profile?.recommended_max_pct ?? null;
+  const maxPct = profile ? effectiveMaxPct(profile) : null;
   const maxAmount =
     profile && maxPct !== null
       ? Math.round((profile.salary_millimes * maxPct) / 100)
@@ -80,7 +81,7 @@ export default function EmployeeHomePage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-heading text-2xl font-semibold tracking-tight">Welcome to Mizania</h1>
+        <h1 className="font-heading text-2xl font-semibold tracking-tight">Welcome to AvancI</h1>
         <p className="mt-2 text-muted-foreground">
           Your salary advance workspace—see what you can request, what is in flight, and your wallet
           balance.

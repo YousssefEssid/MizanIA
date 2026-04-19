@@ -29,6 +29,9 @@ class ProfileOut(BaseModel):
     department: str
     salary_millimes: int
     recommended_max_pct: float | None
+    policy_max_pct: float | None = None
+    global_policy_max_pct: float | None = None
+    request_cutoff_day_of_month: int | None = None
 
     class Config:
         from_attributes = True

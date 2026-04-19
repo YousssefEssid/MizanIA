@@ -25,6 +25,7 @@ class EmployeeProfile(Base):
     dept_attrition_rate: Mapped[float] = mapped_column(Float, default=0.12)
     existing_debt_ratio: Mapped[float] = mapped_column(Float, default=0.0)
     recommended_max_pct: Mapped[float | None] = mapped_column(Float, nullable=True)
+    policy_max_pct: Mapped[float | None] = mapped_column(Float, nullable=True)
     last_scored_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     opted_in_wallet: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)

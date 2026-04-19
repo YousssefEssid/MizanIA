@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import * as api from "@/lib/api";
+import { effectiveMaxPct } from "@/lib/policy";
 import type { AdvanceCreateResponse, Profile } from "@/lib/api";
 import { formatTndCompact, formatPct, tndToMillimes } from "@/lib/money";
 
@@ -49,12 +50,15 @@ export default function EmployeeRequestPage() {
     };
   }, []);
 
-  const maxPct = profile?.recommended_max_pct ?? null;
+  const maxPct = profile ? effectiveMaxPct(profile) : null;
   const maxAmount =
     profile && maxPct !== null
       ? Math.round((profile.salary_millimes * maxPct) / 100)
       : null;
-  const eligible = maxPct !== null && maxPct >= 5;
+  const cutoffDay = profile?.request_cutoff_day_of_month ?? null;
+  const today = new Date();
+  const cutoffPassed = cutoffDay !== null && today.getDate() > cutoffDay;
+  const eligible = maxPct !== null && maxPct >= 5 && !cutoffPassed;
 
   const requestedMillimes = React.useMemo(() => {
     const tnd = Number(amountTnd);
@@ -110,11 +114,41 @@ export default function EmployeeRequestPage() {
       <Card>
         <CardHeader>
           <CardTitle>Your policy</CardTitle>
-          <CardDescription>Limits computed by the WALLAIT scoring model.</CardDescription>
+          <CardDescription>Limits computed by the AvancI scoring model and any HR overrides.</CardDescription>
         </CardHeader>
         <CardContent className="grid gap-3 text-sm">
           <Row label="Allowed maximum amount" value={formatTndCompact(maxAmount)} />
           <Row label="Allowed maximum percentage" value={formatPct(maxPct)} />
+          {profile &&
+          profile.recommended_max_pct != null &&
+          Math.abs((maxPct ?? 0) - profile.recommended_max_pct) > 1e-6 ? (
+            <Row
+              label="How your cap is set"
+              value={
+                <span className="text-muted-foreground">
+                  Model {formatPct(profile.recommended_max_pct)}
+                  {profile.global_policy_max_pct != null
+                    ? ` · Global HR ${formatPct(profile.global_policy_max_pct)}`
+                    : ""}
+                  {profile.policy_max_pct != null
+                    ? ` · Your HR ${formatPct(profile.policy_max_pct)}`
+                    : ""}
+                </span>
+              }
+            />
+          ) : null}
+          {cutoffDay !== null ? (
+            <Row
+              label="Monthly cut-off"
+              value={
+                cutoffPassed ? (
+                  <Badge variant="danger">Closed (after day {cutoffDay})</Badge>
+                ) : (
+                  <span>Open until day {cutoffDay}</span>
+                )
+              }
+            />
+          ) : null}
           <Row
             label="Eligibility"
             value={

@@ -22,7 +22,7 @@ export function NavbarThemeToggle({ className }: { className?: string }) {
   if (!mounted) {
     return (
       <div
-        className={cn("h-7 w-12 shrink-0 rounded-full bg-muted", className)}
+        className={cn("h-8 w-14 shrink-0 rounded-full bg-muted", className)}
         aria-hidden
       />
     );
@@ -47,22 +47,17 @@ export function NavbarThemeToggle({ className }: { className?: string }) {
         aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
         onClick={() => setTheme(isDark ? "light" : "dark")}
         className={cn(
-          "relative inline-flex h-7 w-12 shrink-0 items-center rounded-full border border-border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+          "inline-flex h-8 w-14 shrink-0 rounded-full border border-border p-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
           isDark ? "bg-primary/35" : "bg-muted",
         )}
       >
         <span
           className={cn(
-            "pointer-events-none absolute left-0.5 top-0.5 flex h-6 w-6 items-center justify-center rounded-full bg-card text-foreground shadow-sm ring-1 ring-border transition-transform duration-200 ease-out",
-            isDark && "translate-x-5",
+            "block h-6 w-6 rounded-full bg-background shadow-sm ring-1 ring-border/80 transition-transform duration-200 ease-out will-change-transform",
+            isDark ? "translate-x-6" : "translate-x-0",
           )}
-        >
-          {isDark ? (
-            <Moon className="h-3.5 w-3.5" aria-hidden />
-          ) : (
-            <Sun className="h-3.5 w-3.5" aria-hidden />
-          )}
-        </span>
+          aria-hidden
+        />
       </button>
       <Moon
         className={cn(

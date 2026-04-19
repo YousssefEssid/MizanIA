@@ -15,7 +15,7 @@ async def lifespan(_: FastAPI):
     yield
 
 
-app = FastAPI(title="WALLAIT Demo API", version="0.1.0", lifespan=lifespan)
+app = FastAPI(title="Avanci Demo API", version="0.1.0", lifespan=lifespan)
 
 _origins = (
     ["*"]
@@ -40,7 +40,7 @@ app.include_router(wallets.router)
 @app.get("/", response_class=HTMLResponse, include_in_schema=False)
 def root():
     """
-    Browser-friendly landing page. The JSON API lives here; the Mizania UI is a separate
+    Browser-friendly landing page. The JSON API lives here; the Avanci UI is a separate
     Next.js app (usually http://localhost:3000).
     """
     return """<!DOCTYPE html>
@@ -48,7 +48,7 @@ def root():
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>WALLAIT API</title>
+  <title>Avanci API</title>
   <style>
     body { font-family: system-ui, sans-serif; max-width: 40rem; margin: 2rem auto; padding: 0 1rem; line-height: 1.5; }
     code { background: #f0f0f0; padding: 0.15em 0.4em; border-radius: 4px; }
@@ -63,7 +63,7 @@ def root():
     <li><a href="/docs">Open API docs (Swagger)</a></li>
     <li><a href="/health">Health check</a> (<code>GET /health</code>)</li>
   </ul>
-  <p><strong>Mizania UI (login, dashboards):</strong> run <code>npm run dev</code> in <code>frontend/</code>
+  <p><strong>Avanci UI (login, dashboards):</strong> run <code>npm run dev</code> in <code>frontend/</code>
      — then open <a href="http://localhost:3000">http://localhost:3000</a>.
      The UI calls this API at <code>http://127.0.0.1:8000</code> by default.</p>
 </body>

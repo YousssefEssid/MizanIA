@@ -10,6 +10,7 @@ from app.models import (
     AdvanceRequest,
     AdvanceStatus,
     EmployeeProfile,
+    EmployerPolicy,
     LedgerDirection,
     User,
     UserRole,
@@ -18,7 +19,10 @@ from app.models import (
 from app.schemas.hr import (
     AdvanceDecision,
     AdvanceRequestHR,
+    EmployeePolicyUpdate,
     EmployeePublic,
+    EmployerPolicyOut,
+    EmployerPolicyUpdate,
     PayrollLine,
     WalletFund,
 )
@@ -31,6 +35,12 @@ router = APIRouter(prefix="/hr", tags=["hr"])
 HR = Annotated[User, Depends(require_roles(UserRole.hr_admin))]
 
 
+def _employee_public(db: Session, row: EmployeeProfile) -> EmployeePublic:
+    pol = db.query(EmployerPolicy).filter_by(employer_id=row.employer_id).first()
+    g = pol.global_policy_max_pct if pol else None
+    return EmployeePublic.model_validate(row).model_copy(update={"global_policy_max_pct": g})
+
+
 def _employer_id(user: User) -> int:
     if not user.employer_id:
         raise HTTPException(status_code=400, detail="HR user missing employer")
@@ -41,7 +51,7 @@ def _employer_id(user: User) -> int:
 def list_employees(db: Annotated[Session, Depends(get_db)], user: HR):
     eid = _employer_id(user)
     rows = db.query(EmployeeProfile).filter_by(employer_id=eid).all()
-    return rows
+    return [_employee_public(db, r) for r in rows]
 
 
 @router.post("/employees/upload")
@@ -217,6 +227,80 @@ def fund_wallet(
     db.commit()
     db.refresh(wallet)
     return {"employer_id": eid, "balance_millimes": wallet.balance_millimes}
+
+
+def _get_or_create_policy(db: Session, employer_id: int) -> EmployerPolicy:
+    p = db.query(EmployerPolicy).filter_by(employer_id=employer_id).first()
+    if not p:
+        p = EmployerPolicy(employer_id=employer_id, request_cutoff_day_of_month=None)
+        db.add(p)
+        db.flush()
+    return p
+
+
+@router.get("/policy", response_model=EmployerPolicyOut)
+def get_policy(db: Annotated[Session, Depends(get_db)], user: HR):
+    eid = _employer_id(user)
+    p = _get_or_create_policy(db, eid)
+    db.commit()
+    return p
+
+
+@router.put("/policy", response_model=EmployerPolicyOut)
+def update_policy(
+    body: EmployerPolicyUpdate,
+    db: Annotated[Session, Depends(get_db)],
+    user: HR,
+):
+    eid = _employer_id(user)
+    p = _get_or_create_policy(db, eid)
+    patch = body.model_dump(exclude_unset=True)
+    if "request_cutoff_day_of_month" in patch:
+        v = patch["request_cutoff_day_of_month"]
+        if v is not None and (not isinstance(v, int) or v < 1 or v > 31):
+            raise HTTPException(
+                status_code=400,
+                detail="Cut-off day must be an integer between 1 and 31, or null.",
+            )
+        p.request_cutoff_day_of_month = v
+    if "global_policy_max_pct" in patch:
+        p.global_policy_max_pct = patch["global_policy_max_pct"]
+    db.add(p)
+    db.commit()
+    db.refresh(p)
+    return p
+
+
+@router.put("/employees/{employee_id}/policy", response_model=EmployeePublic)
+def update_employee_policy(
+    employee_id: int,
+    body: EmployeePolicyUpdate,
+    db: Annotated[Session, Depends(get_db)],
+    user: HR,
+):
+    eid = _employer_id(user)
+    emp = db.get(EmployeeProfile, employee_id)
+    if not emp or emp.employer_id != eid:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    pol = db.query(EmployerPolicy).filter_by(employer_id=eid).first()
+    g = pol.global_policy_max_pct if pol else None
+    if body.policy_max_pct is not None and emp.recommended_max_pct is not None:
+        ceiling = float(emp.recommended_max_pct)
+        if g is not None:
+            ceiling = min(ceiling, float(g))
+        if body.policy_max_pct > ceiling + 1e-6:
+            raise HTTPException(
+                status_code=400,
+                detail=(
+                    f"policy_max_pct ({body.policy_max_pct:.2f}%) exceeds the allowed "
+                    f"ceiling ({ceiling:.2f}%) (model and employer policy)."
+                ),
+            )
+    emp.policy_max_pct = body.policy_max_pct
+    db.add(emp)
+    db.commit()
+    db.refresh(emp)
+    return _employee_public(db, emp)
 
 
 @router.get("/reports/payroll-deductions", response_model=list[PayrollLine])

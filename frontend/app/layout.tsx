@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Manrope } from "next/font/google";
+import { Inter, Manrope, Dancing_Script } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/lib/auth";
 import "./globals.css";
@@ -16,11 +16,18 @@ const manrope = Manrope({
   display: "swap",
 });
 
+const wordmark = Dancing_Script({
+  weight: ["500", "600", "700"],
+  subsets: ["latin"],
+  variable: "--font-wordmark",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: { default: "Mizania", template: "%s · Mizania" },
+  title: { default: "AvancI", template: "%s · AvancI" },
   description:
-    "Mizania — salary advance management for companies and employees. Modern, trustworthy, operational.",
-  applicationName: "Mizania",
+    "AvancI — salary advance management for companies and employees. Modern, trustworthy, operational.",
+  applicationName: "AvancI",
 };
 
 export default function RootLayout({
@@ -30,13 +37,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${manrope.variable} font-sans`}>
+      <body
+        className={`${inter.variable} ${manrope.variable} ${wordmark.variable} font-sans`}
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
-          storageKey="mizania-theme"
+          storageKey="avanci-theme"
         >
           <AuthProvider>{children}</AuthProvider>
         </ThemeProvider>

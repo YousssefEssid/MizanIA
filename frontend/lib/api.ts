@@ -1,5 +1,5 @@
 /**
- * Thin fetch wrapper for the WALLAIT FastAPI backend.
+ * Thin fetch wrapper for the Avanci FastAPI backend.
  *
  * Auth model:
  *   - JWT in localStorage under TOKEN_KEY.
@@ -9,7 +9,8 @@
  * All money values on the wire are integer **millimes** (1 TND = 1000 millimes).
  */
 
-export const TOKEN_KEY = "wallait.token";
+export const TOKEN_KEY = "avanci.token";
+const LEGACY_TOKEN_KEYS = ["wallait.token"];
 
 /** Prefer 127.0.0.1: some environments resolve `localhost` to ::1 while the API only listens on IPv4. */
 export const API_BASE_URL =
@@ -42,6 +43,8 @@ export type EmployeePublic = {
   department: string;
   salary_millimes: number;
   recommended_max_pct: number | null;
+  policy_max_pct: number | null;
+  global_policy_max_pct?: number | null;
   last_scored_at: string | null;
   opted_in_wallet: boolean;
 };
@@ -79,6 +82,14 @@ export type Profile = {
   department: string;
   salary_millimes: number;
   recommended_max_pct: number | null;
+  policy_max_pct: number | null;
+  global_policy_max_pct?: number | null;
+  request_cutoff_day_of_month: number | null;
+};
+
+export type EmployerPolicy = {
+  request_cutoff_day_of_month: number | null;
+  global_policy_max_pct: number | null;
 };
 
 export type WalletOut = {
@@ -137,8 +148,10 @@ export type WalletLedger = {
 export type VerifyChainResponse = {
   ok: boolean;
   broken_at?: number | null;
+  broken_at_entry_id?: number | null;
   reason?: string | null;
   count?: number;
+  entry_count?: number;
 };
 
 export class ApiError extends Error {
@@ -153,13 +166,24 @@ export class ApiError extends Error {
 
 function readToken(): string | null {
   if (typeof window === "undefined") return null;
-  return window.localStorage.getItem(TOKEN_KEY);
+  const cur = window.localStorage.getItem(TOKEN_KEY);
+  if (cur) return cur;
+  for (const k of LEGACY_TOKEN_KEYS) {
+    const legacy = window.localStorage.getItem(k);
+    if (legacy) {
+      window.localStorage.setItem(TOKEN_KEY, legacy);
+      window.localStorage.removeItem(k);
+      return legacy;
+    }
+  }
+  return null;
 }
 
 export function setToken(token: string | null) {
   if (typeof window === "undefined") return;
   if (token) window.localStorage.setItem(TOKEN_KEY, token);
   else window.localStorage.removeItem(TOKEN_KEY);
+  for (const k of LEGACY_TOKEN_KEYS) window.localStorage.removeItem(k);
 }
 
 type RequestOptions = {
@@ -293,10 +317,12 @@ export type ScoreEmployeesResponse = {
 export const hrScoreAll = () =>
   request<ScoreEmployeesResponse>("/hr/employees/score", { method: "POST" });
 
+export type CsvUploadError = { row: number; error: string };
+
 export const hrUploadCsv = (file: File) => {
   const fd = new FormData();
   fd.append("file", file);
-  return request<{ created: number; updated: number; errors: string[] }>(
+  return request<{ created: number; updated: number; errors: CsvUploadError[] }>(
     "/hr/employees/upload",
     { method: "POST", multipart: fd },
   );
@@ -312,6 +338,20 @@ export const hrFundWallet = (amountMillimes: number) =>
 
 export const hrPayrollDeductions = (year: number, month: number) =>
   request<PayrollLine[]>("/hr/reports/payroll-deductions", { query: { year, month } });
+
+export const hrGetPolicy = () => request<EmployerPolicy>("/hr/policy");
+
+export const hrUpdatePolicy = (policy: Partial<EmployerPolicy>) =>
+  request<EmployerPolicy>("/hr/policy", { method: "PUT", body: policy });
+
+export const hrUpdateEmployeePolicy = (
+  employeeId: number,
+  policyMaxPct: number | null,
+) =>
+  request<EmployeePublic>(`/hr/employees/${employeeId}/policy`, {
+    method: "PUT",
+    body: { policy_max_pct: policyMaxPct },
+  });
 
 /* -------------------------------------------------------------------------- */
 /*                              Employee (/me)                                */

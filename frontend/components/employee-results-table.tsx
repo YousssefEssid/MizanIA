@@ -28,23 +28,24 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import type { AdvanceRequestHR, EmployeePublic } from "@/lib/api";
+import { effectiveMaxPct } from "@/lib/policy";
 import { formatTndCompact, formatPct, formatDateTime, formatDate } from "@/lib/money";
 import { cn } from "@/lib/utils";
 
 type Eligibility = "Eligible" | "Not Eligible" | "Pending Review";
 
 function deriveEligibility(e: EmployeePublic): Eligibility {
-  if (e.recommended_max_pct === null || e.recommended_max_pct === undefined) {
-    return "Pending Review";
-  }
+  const eff = effectiveMaxPct(e);
+  if (eff === null) return "Pending Review";
   if (!e.opted_in_wallet) return "Not Eligible";
-  if (e.recommended_max_pct < 5) return "Not Eligible";
+  if (eff < 5) return "Not Eligible";
   return "Eligible";
 }
 
 function maxAdvanceMillimes(e: EmployeePublic): number | null {
-  if (!e.recommended_max_pct) return null;
-  return Math.round((e.salary_millimes * e.recommended_max_pct) / 100);
+  const eff = effectiveMaxPct(e);
+  if (eff === null) return null;
+  return Math.round((e.salary_millimes * eff) / 100);
 }
 
 function eligibilityBadge(label: Eligibility) {
@@ -178,10 +179,13 @@ export function EmployeeResultsTable({
           />
         </div>
         <div className="flex flex-wrap gap-3">
-          <div className="w-44 space-y-1.5">
+          <div className="min-w-[13.5rem] space-y-1.5">
             <label className="text-xs font-medium text-muted-foreground">Eligibility</label>
             <Select value={eligibilityFilter} onValueChange={setEligibilityFilter}>
-              <SelectTrigger aria-label="Filter by eligibility">
+              <SelectTrigger
+                aria-label="Filter by eligibility"
+                className="[&>span]:line-clamp-none"
+              >
                 <SelectValue placeholder="Eligibility" />
               </SelectTrigger>
               <SelectContent>
@@ -223,7 +227,7 @@ export function EmployeeResultsTable({
               <SortableHead label="Department" k="department" {...{ sortKey, sortDir, toggleSort }} />
               <SortableHead label="Salary" k="salary_millimes" {...{ sortKey, sortDir, toggleSort }} />
               <SortableHead
-                label="Max %"
+                label="Effective %"
                 k="recommended_max_pct"
                 {...{ sortKey, sortDir, toggleSort }}
               />
@@ -249,15 +253,10 @@ export function EmployeeResultsTable({
               </TableRow>
             ) : (
               slice.map(({ row, eligibility, max_amount }) => {
-                const notEligible = eligibility === "Not Eligible";
                 return (
                   <TableRow
                     key={row.id}
-                    className={cn(
-                      "cursor-pointer",
-                      notEligible &&
-                        "bg-[hsl(var(--row-danger-soft))] hover:bg-[hsl(var(--row-danger-soft))]/90",
-                    )}
+                    className="cursor-pointer"
                     onClick={() => {
                       setSelected(row);
                       setOpen(true);
@@ -277,17 +276,21 @@ export function EmployeeResultsTable({
                     <TableCell className="font-medium">{row.full_name}</TableCell>
                     <TableCell>{row.department}</TableCell>
                     <TableCell>{formatTndCompact(row.salary_millimes)}</TableCell>
-                    <TableCell>{formatPct(row.recommended_max_pct)}</TableCell>
+                    <TableCell>
+                      {formatPct(effectiveMaxPct(row))}
+                      {row.recommended_max_pct != null &&
+                      effectiveMaxPct(row) != null &&
+                      Math.abs(effectiveMaxPct(row)! - row.recommended_max_pct) > 1e-6 ? (
+                        <span className="ml-1 text-[10px] uppercase text-muted-foreground">
+                          (HR)
+                        </span>
+                      ) : null}
+                    </TableCell>
                     <TableCell>{formatTndCompact(max_amount)}</TableCell>
                     <TableCell className="text-xs text-muted-foreground">
                       {row.last_scored_at ? formatDateTime(row.last_scored_at) : "—"}
                     </TableCell>
-                    <TableCell
-                      className={cn(
-                        notEligible &&
-                          "rounded-md ring-1 ring-[hsl(var(--danger))]/25 dark:ring-[hsl(var(--danger))]/40",
-                      )}
-                    >
+                    <TableCell className="whitespace-nowrap">
                       {eligibilityBadge(eligibility)}
                     </TableCell>
                   </TableRow>
@@ -338,8 +341,29 @@ export function EmployeeResultsTable({
                 <div className="grid gap-3 rounded-lg border border-border bg-muted/30 p-4 text-sm">
                   <Row label="Salary" value={formatTndCompact(selected.salary_millimes)} />
                   <Row
-                    label="Max recommended %"
+                    label="Model max %"
                     value={formatPct(selected.recommended_max_pct)}
+                  />
+                  <Row
+                    label="HR override %"
+                    value={
+                      selected.policy_max_pct === null || selected.policy_max_pct === undefined
+                        ? "— (per row)"
+                        : formatPct(selected.policy_max_pct)
+                    }
+                  />
+                  <Row
+                    label="Global HR max %"
+                    value={
+                      selected.global_policy_max_pct === null ||
+                      selected.global_policy_max_pct === undefined
+                        ? "—"
+                        : formatPct(selected.global_policy_max_pct)
+                    }
+                  />
+                  <Row
+                    label="Effective max %"
+                    value={formatPct(effectiveMaxPct(selected))}
                   />
                   <Row
                     label="Max advance amount"
@@ -411,9 +435,9 @@ export function EmployeeResultsTable({
 
 function Row({ label, value }: { label: string; value: React.ReactNode }) {
   return (
-    <div className="flex justify-between gap-4">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="max-w-[60%] text-right font-medium">{value}</span>
+    <div className="flex justify-between gap-4 sm:items-center">
+      <span className="shrink-0 text-muted-foreground">{label}</span>
+      <span className="min-w-0 text-right font-medium">{value}</span>
     </div>
   );
 }
@@ -432,7 +456,7 @@ function sortValue(
     case "salary_millimes":
       return d.row.salary_millimes;
     case "recommended_max_pct":
-      return d.row.recommended_max_pct;
+      return effectiveMaxPct(d.row);
     case "max_amount":
       return d.max_amount;
     case "last_scored_at":

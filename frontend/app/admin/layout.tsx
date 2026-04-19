@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { LogOut } from "lucide-react";
 import { NavbarThemeToggle } from "@/components/theme-toggle";
-import { MizaniaLogo } from "@/components/mizania-mark";
+import { AvanciLogo } from "@/components/avanci-logo";
 import { Button } from "@/components/ui/button";
 import { RoleGate, useAuth } from "@/lib/auth";
 
@@ -24,13 +24,12 @@ function Shell({ children }: { children: React.ReactNode }) {
   const { user, signOut } = useAuth();
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <header className="border-b border-border bg-card">
-        <div className="mx-auto flex max-w-4xl items-center justify-between gap-3 px-4 py-3">
-          <Link href="/admin" className="flex flex-col gap-0.5">
-            <MizaniaLogo className="h-8 max-w-[200px]" />
-            <p className="text-xs text-muted-foreground">Superadmin console</p>
+      <header className="sticky top-0 z-30 border-b border-border bg-card/90 backdrop-blur">
+        <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-3 px-4 py-3">
+          <Link href="/admin" className="inline-flex">
+            <AvanciLogo />
           </Link>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             {user ? (
               <p className="hidden text-xs text-muted-foreground sm:block">{user.email}</p>
             ) : null}
@@ -43,12 +42,12 @@ function Shell({ children }: { children: React.ReactNode }) {
               className="gap-1.5"
             >
               <LogOut className="h-3.5 w-3.5" />
-              Sign out
+              <span className="hidden sm:inline">Sign out</span>
             </Button>
           </div>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8">{children}</main>
+      <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-8">{children}</main>
     </div>
   );
 }

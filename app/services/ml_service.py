@@ -124,16 +124,30 @@ def predict_max_pct(profile: EmployeeProfile, today: date | None = None) -> floa
 
 
 def score_request(
-    profile: EmployeeProfile, requested_amount_millimes: int, today: date | None = None
+    profile: EmployeeProfile,
+    requested_amount_millimes: int,
+    today: date | None = None,
+    global_policy_max_pct: float | None = None,
 ) -> tuple[float, int, bool, str]:
-    """Returns (recommended_max_pct, recommended_amount_millimes, eligible, note)."""
+    """Returns (effective_max_pct, effective_amount_millimes, eligible, note).
+
+    The effective cap is the minimum of the model recommendation and any HR
+    caps (employer-wide global and/or per-employee override).
+    """
     today = today or date.today()
     salary = max(profile.salary_millimes, 1)
     req_pct = 100.0 * requested_amount_millimes / salary
-    max_pct = predict_max_pct(profile, today)
+    model_pct = predict_max_pct(profile, today)
+    caps: list[float] = [model_pct]
+    if global_policy_max_pct is not None:
+        caps.append(max(0.0, float(global_policy_max_pct)))
+    if profile.policy_max_pct is not None:
+        caps.append(max(0.0, float(profile.policy_max_pct)))
+    max_pct = min(caps)
+    cap_source = "HR policy" if max_pct + 1e-9 < model_pct else "model"
     rec_amount = int(round(salary * max_pct / 100.0))
     eligible = requested_amount_millimes <= rec_amount and max_pct > 0.5
-    note = f"Model cap ~{max_pct:.1f}% of monthly salary ({rec_amount / 1000:.3f} TND)."
+    note = f"{cap_source.capitalize()} cap ~{max_pct:.1f}% of monthly salary ({rec_amount / 1000:.3f} TND)."
     if not eligible:
         note += " Request exceeds recommended cap (HR may still decide)."
     return max_pct, rec_amount, eligible, note

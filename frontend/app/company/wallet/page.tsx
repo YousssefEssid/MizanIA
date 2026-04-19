@@ -179,12 +179,13 @@ export default function CompanyWalletPage() {
           <div className="flex flex-wrap items-center gap-3">
             {verifyResult ? (
               verifyResult.ok ? (
-                <Badge variant="success">
-                  Chain OK ({verifyResult.count ?? "?"} entries)
-                </Badge>
+                <Badge variant="success">Chain OK</Badge>
               ) : (
                 <Badge variant="danger">
-                  Broken at #{verifyResult.broken_at ?? "?"}
+                  Broken at #
+                  {verifyResult.broken_at_entry_id ??
+                    verifyResult.broken_at ??
+                    "?"}
                 </Badge>
               )
             ) : null}

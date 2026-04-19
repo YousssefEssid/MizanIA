@@ -11,7 +11,7 @@ import { API_BASE_URL, ApiError } from "@/lib/api";
 const DEMO_CREDENTIALS = [
   { label: "HR admin", email: "hr@demo.tn", password: "demo1234" },
   { label: "Employee", email: "amine@demo.tn", password: "employee123" },
-  { label: "Superadmin", email: "super@wallait.tn", password: "superadmin123" },
+  { label: "Superadmin", email: "super@avanci.tn", password: "superadmin123" },
 ];
 
 export function LoginForm() {

@@ -3,10 +3,10 @@ from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # Always resolve the default DB to the repo root (directory that contains `app/`), not the CWD.
-# Otherwise `uvicorn` started from e.g. `frontend/` would use a different `wallait.db` and logins
+# Otherwise `uvicorn` started from e.g. `frontend/` would use a different `avanci.db` and logins
 # (including auto-created employees) would appear to "not work".
 _REPO_ROOT = Path(__file__).resolve().parent.parent
-_DEFAULT_SQLITE_URL = "sqlite:///" + (_REPO_ROOT / "wallait.db").resolve().as_posix()
+_DEFAULT_SQLITE_URL = "sqlite:///" + (_REPO_ROOT / "avanci.db").resolve().as_posix()
 
 
 class Settings(BaseSettings):

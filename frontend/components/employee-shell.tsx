@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { LogOut } from "lucide-react";
 import { NavbarThemeToggle } from "@/components/theme-toggle";
-import { MizaniaLogo } from "@/components/mizania-mark";
+import { AvanciLogo } from "@/components/avanci-logo";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
@@ -24,54 +24,57 @@ export function EmployeeShell({
   const { user, signOut } = useAuth();
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <header className="border-b border-border bg-card">
-        <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-3">
-          <Link href="/employee" className="flex flex-col gap-0.5">
-            <MizaniaLogo className="h-8 max-w-[200px]" />
-            <p className="text-xs text-muted-foreground">Employee portal</p>
-          </Link>
-          {user ? (
-            <div className="hidden text-right text-xs sm:block">
-              <p className="font-medium text-foreground">{user.email}</p>
-              <p className="text-muted-foreground">Employee #{user.employee_profile_id ?? "—"}</p>
+      <header className="sticky top-0 z-30 border-b border-border bg-card/90 backdrop-blur">
+        <div className="mx-auto flex w-full max-w-5xl flex-col gap-2 px-4 py-3">
+          <div className="flex items-center justify-between gap-3">
+            <Link href="/employee" className="inline-flex shrink-0">
+              <AvanciLogo />
+            </Link>
+            <div className="flex items-center gap-2 sm:gap-3">
+              {user ? (
+                <div className="hidden text-right text-xs leading-tight sm:block">
+                  <p className="font-medium text-foreground">{user.email}</p>
+                  <p className="text-muted-foreground">
+                    Employee #{user.employee_profile_id ?? "—"}
+                  </p>
+                </div>
+              ) : null}
+              <NavbarThemeToggle />
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={signOut}
+                className="gap-1.5"
+              >
+                <LogOut className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Sign out</span>
+              </Button>
             </div>
-          ) : null}
-        </div>
-        <nav className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-3 border-t border-border px-4 py-2">
-          <div className="flex flex-wrap gap-2">
+          </div>
+          <nav
+            aria-label="Employee"
+            className="-mx-1 flex flex-wrap items-center gap-1 overflow-x-auto pb-1"
+          >
             {links.map((l) => {
               const active =
-                l.href === "/employee"
-                  ? pathname === "/employee"
-                  : pathname.startsWith(l.href);
+                l.href === "/employee" ? pathname === "/employee" : pathname.startsWith(l.href);
               return (
                 <Link
                   key={l.href}
                   href={l.href}
                   className={cn(
-                    "rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground",
-                    active && "bg-muted text-foreground",
+                    "rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
+                    active &&
+                      "bg-accent text-accent-foreground hover:bg-accent hover:text-accent-foreground",
                   )}
                 >
                   {l.label}
                 </Link>
               );
             })}
-          </div>
-          <div className="flex items-center gap-2">
-            <NavbarThemeToggle className="shrink-0" />
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              onClick={signOut}
-              className="gap-1.5"
-            >
-              <LogOut className="h-3.5 w-3.5" />
-              Sign out
-            </Button>
-          </div>
-        </nav>
+          </nav>
+        </div>
       </header>
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-6">{children}</main>
     </div>

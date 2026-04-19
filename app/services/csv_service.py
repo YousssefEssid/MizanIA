@@ -32,6 +32,10 @@ def upsert_employees_from_dataframe(db: Session, employer_id: int, df: pd.DataFr
         if c not in df.columns:
             raise ValueError(f"Missing column: {c}")
 
+    df = df.copy()
+    df["employee_code"] = df["employee_code"].astype(str).str.strip()
+    df = df.drop_duplicates(subset=["employee_code"], keep="last")
+
     created, updated, errors = 0, 0, []
     optional_defaults = {
         "performance_score": 3.0,
@@ -47,6 +51,8 @@ def upsert_employees_from_dataframe(db: Session, employer_id: int, df: pd.DataFr
     for i, row in df.iterrows():
         try:
             code = str(row["employee_code"]).strip()
+            if not code or code.lower() == "nan":
+                raise ValueError("empty employee_code")
             data = {
                 "full_name": str(row["full_name"]).strip(),
                 "department": str(row["department"]).strip(),

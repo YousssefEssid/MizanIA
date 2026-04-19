@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { Sparkles, Upload } from "lucide-react";
+import Link from "next/link";
+import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,8 +14,7 @@ import {
 import { EmployeeResultsTable } from "@/components/employee-results-table";
 import * as api from "@/lib/api";
 import type { AdvanceRequestHR, EmployeePublic } from "@/lib/api";
-
-type UploadResult = { created: number; updated: number; errors: string[] };
+import { effectiveMaxPct } from "@/lib/policy";
 
 export default function CompanyResultsPage() {
   const [employees, setEmployees] = React.useState<EmployeePublic[]>([]);
@@ -22,10 +22,7 @@ export default function CompanyResultsPage() {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
   const [scoring, setScoring] = React.useState(false);
-  const [uploading, setUploading] = React.useState(false);
-  const [uploadResult, setUploadResult] = React.useState<UploadResult | null>(null);
   const [notice, setNotice] = React.useState<string | null>(null);
-  const fileInputRef = React.useRef<HTMLInputElement | null>(null);
 
   const reload = React.useCallback(async () => {
     setLoading(true);
@@ -65,32 +62,12 @@ export default function CompanyResultsPage() {
     }
   }
 
-  async function handleUpload(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    setUploading(true);
-    setNotice(null);
-    setUploadResult(null);
-    setError(null);
-    try {
-      const res = await api.hrUploadCsv(file);
-      setUploadResult(res);
-      setNotice(
-        `Imported file "${file.name}" — created ${res.created}, updated ${res.updated}, errors ${res.errors.length}.`,
-      );
-      await reload();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : String(e));
-    } finally {
-      setUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    }
-  }
-
-  const eligibleCount = employees.filter(
-    (e) => (e.recommended_max_pct ?? 0) >= 5 && e.opted_in_wallet,
-  ).length;
+  const eligibleCount = employees.filter((e) => {
+    const eff = effectiveMaxPct(e);
+    return eff !== null && eff >= 5 && e.opted_in_wallet;
+  }).length;
   const unscored = employees.filter((e) => e.recommended_max_pct === null).length;
+  const overridden = employees.filter((e) => e.policy_max_pct !== null).length;
 
   return (
     <div className="space-y-6">
@@ -99,55 +76,42 @@ export default function CompanyResultsPage() {
           Employee results
         </h1>
         <p className="mt-2 max-w-3xl text-muted-foreground">
-          Eligibility and advance limits in plain language. Upload a CSV/XLSX of your roster, run
-          scoring, and open a row for full detail and request history.
+          Eligibility and advance limits computed by the AvancI model. Upload your roster in the{" "}
+          <Link href="/company/upload" className="font-medium text-primary hover:underline">
+            Upload
+          </Link>{" "}
+          tab, run the model here, and tune per-employee caps in{" "}
+          <Link href="/company/policy" className="font-medium text-primary hover:underline">
+            Policy
+          </Link>
+          .
         </p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Roster operations</CardTitle>
+          <CardTitle>Run the model</CardTitle>
           <CardDescription>
-            CSV/XLSX upload upserts by <code className="font-mono text-xs">employee_code</code>.
-            Required columns:{" "}
-            <span className="font-mono text-xs">
-              employee_code, full_name, department, salary_millimes, hire_date
-            </span>
-            ; optional:{" "}
-            <span className="font-mono text-xs">
-              performance_score, on_time_repayment_rate, past_advance_count, days_since_last_advance,
-              has_active_advance, dept_attrition_rate, existing_debt_ratio, opted_in_wallet
-            </span>
-            .
+            Recomputes the recommended max % for every employee in your roster and provisions
+            employee logins for any new rows.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex flex-wrap gap-2">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".csv,.xlsx,.xls,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-              className="hidden"
-              onChange={handleUpload}
-            />
             <Button
               type="button"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={uploading}
-              className="gap-2"
-            >
-              <Upload className="h-4 w-4" />
-              {uploading ? "Uploading…" : "Upload roster (CSV/XLSX)"}
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
               onClick={handleScore}
               disabled={scoring || employees.length === 0}
               className="gap-2"
             >
               <Sparkles className="h-4 w-4" />
-              {scoring ? "Scoring…" : `Score all (${employees.length})`}
+              {scoring ? "Running…" : `Run model (${employees.length})`}
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/company/upload">Go to upload</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/company/policy">Tune policy</Link>
             </Button>
           </div>
 
@@ -156,10 +120,14 @@ export default function CompanyResultsPage() {
               Total: <span className="font-medium text-foreground">{employees.length}</span>
             </span>
             <span>
-              Eligible (≥5%, opted-in): <span className="font-medium text-foreground">{eligibleCount}</span>
+              Eligible (≥5%, opted-in):{" "}
+              <span className="font-medium text-foreground">{eligibleCount}</span>
             </span>
             <span>
               Unscored: <span className="font-medium text-foreground">{unscored}</span>
+            </span>
+            <span>
+              HR overrides: <span className="font-medium text-foreground">{overridden}</span>
             </span>
           </div>
 
@@ -175,19 +143,6 @@ export default function CompanyResultsPage() {
             >
               {error}
             </p>
-          ) : null}
-          {uploadResult && uploadResult.errors.length > 0 ? (
-            <details className="rounded-md border border-[hsl(var(--warning))]/30 bg-[hsl(var(--warning-soft))] px-3 py-2 text-sm text-[hsl(var(--warning-fg))]">
-              <summary className="cursor-pointer font-medium">
-                {uploadResult.errors.length} row error{uploadResult.errors.length === 1 ? "" : "s"} in
-                last upload
-              </summary>
-              <ul className="mt-2 list-inside list-disc space-y-0.5 text-xs">
-                {uploadResult.errors.slice(0, 50).map((err, i) => (
-                  <li key={i}>{err}</li>
-                ))}
-              </ul>
-            </details>
           ) : null}
         </CardContent>
       </Card>

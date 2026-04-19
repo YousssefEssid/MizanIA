@@ -1,7 +1,7 @@
 """
 ml/synth.py
 -----------
-Generates synthetic Tunisian employee data for WALLAIT EWA model training.
+Generates synthetic Tunisian employee data for Avanci EWA model training.
 
 Two public functions:
   generate_training_data(n=5000, seed=42) -> pd.DataFrame
@@ -400,7 +400,7 @@ if __name__ == "__main__":
     import argparse
     import pathlib
 
-    parser = argparse.ArgumentParser(description="Generate WALLAIT synthetic data")
+    parser = argparse.ArgumentParser(description="Generate Avanci synthetic data")
     parser.add_argument(
         "--live-demo-only",
         action="store_true",

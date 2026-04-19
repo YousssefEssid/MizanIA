@@ -102,7 +102,7 @@ export default function AdminHomePage() {
           <CardHeader>
             <CardTitle>Create employer</CardTitle>
             <CardDescription>
-              The employer becomes a tenant in WALLAIT with its own roster, wallet, and ledger.
+              The employer becomes a tenant in AvancI with its own roster, wallet, and ledger.
             </CardDescription>
           </CardHeader>
           <CardContent>

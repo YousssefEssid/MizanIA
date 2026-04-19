@@ -11,6 +11,7 @@ const config: Config = {
     fontFamily: {
       sans: ["var(--font-inter)", "system-ui", "sans-serif"],
       heading: ["var(--font-manrope)", "var(--font-inter)", "system-ui", "sans-serif"],
+      wordmark: ["var(--font-wordmark)", "cursive", "system-ui", "sans-serif"],
     },
     extend: {
       colors: {

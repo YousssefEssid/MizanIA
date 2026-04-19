@@ -37,10 +37,11 @@ def main():
     init_db()
     db = SessionLocal()
     try:
-        super_email = os.environ.get("SUPERADMIN_EMAIL", "super@wallait.tn")
+        super_email = os.environ.get("SUPERADMIN_EMAIL", "super@avanci.tn")
         super_pass = os.environ.get("SUPERADMIN_PASSWORD", "superadmin123")
 
-        if not db.query(User).filter_by(email=super_email).first():
+        existing_super = db.query(User).filter_by(email=super_email).first()
+        if not existing_super:
             db.add(
                 User(
                     email=super_email,
@@ -48,6 +49,11 @@ def main():
                     role=UserRole.superadmin,
                 )
             )
+            db.commit()
+        else:
+            existing_super.password_hash = hash_password(super_pass)
+            existing_super.role = UserRole.superadmin
+            db.add(existing_super)
             db.commit()
 
         emp = db.query(Employer).filter_by(name="Demo Tunis SARL").first()
@@ -139,7 +145,7 @@ def main():
             db.add(p)
         db.commit()
 
-        print("--- WALLAIT demo credentials ---")
+        print("--- Avanci demo credentials ---")
         print(f"Superadmin: {super_email} / {super_pass}")
         print("HR: hr@demo.tn / demo1234")
         print("Employee: amine@demo.tn / employee123")

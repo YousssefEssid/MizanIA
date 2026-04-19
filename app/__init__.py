@@ -1,1 +1,1 @@
-"""WALLAIT backend package."""
+"""Avanci backend package."""

@@ -4,18 +4,25 @@ import * as React from "react";
 import Link from "next/link";
 import { LogOut } from "lucide-react";
 import { NavbarThemeToggle } from "@/components/theme-toggle";
-import { MizaniaLogo } from "@/components/mizania-mark";
+import { AvanciLogo } from "@/components/avanci-logo";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
 const links = [
   { href: "/company/dashboard", label: "Dashboard" },
-  { href: "/company/results", label: "Employee results" },
+  { href: "/company/upload", label: "Upload" },
+  { href: "/company/results", label: "Results" },
+  { href: "/company/policy", label: "Policy" },
   { href: "/company/requests", label: "Requests" },
-  { href: "/company/repayments", label: "Repayments" },
+  { href: "/company/repayments", label: "Payroll deductions" },
   { href: "/company/wallet", label: "Wallet" },
 ];
+
+function isActive(pathname: string, href: string) {
+  if (href === "/company/dashboard") return pathname.startsWith("/company/dashboard");
+  return pathname.startsWith(href);
+}
 
 export function CompanyShell({
   children,
@@ -26,89 +33,59 @@ export function CompanyShell({
 }) {
   const { user, signOut } = useAuth();
   return (
-    <div className="flex min-h-screen bg-background">
-      <aside className="hidden w-60 shrink-0 border-r border-border bg-card md:flex md:flex-col">
-        <div className="flex flex-col gap-2 border-b border-border px-4 py-4">
-          <MizaniaLogo className="max-w-[200px]" />
-          <p className="text-xs text-muted-foreground">Company workspace</p>
-        </div>
-        <nav className="flex flex-1 flex-col gap-1 p-3">
-          {links.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              className={cn(
-                "rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
-                pathname.startsWith(l.href) &&
-                  "bg-accent text-accent-foreground hover:bg-accent",
-              )}
-            >
-              {l.label}
+    <div className="flex min-h-screen flex-col bg-background">
+      <header className="sticky top-0 z-30 border-b border-border bg-card/90 backdrop-blur">
+        <div className="mx-auto flex w-full max-w-7xl flex-col gap-2 px-4 py-3">
+          <div className="flex items-center justify-between gap-3">
+            <Link href="/company/dashboard" className="inline-flex shrink-0">
+              <AvanciLogo />
             </Link>
-          ))}
-        </nav>
-        <div className="mt-auto flex flex-col gap-3 border-t border-border p-3">
-          {user ? (
-            <div className="rounded-md bg-muted/40 px-3 py-2 text-xs">
-              <p className="font-medium text-foreground">{user.email}</p>
-              <p className="text-muted-foreground">HR · Employer #{user.employer_id ?? "—"}</p>
-            </div>
-          ) : null}
-          <NavbarThemeToggle />
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={signOut}
-            className="justify-start gap-2"
-          >
-            <LogOut className="h-4 w-4" />
-            Sign out
-          </Button>
-        </div>
-      </aside>
-      <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center justify-between gap-3 border-b border-border bg-card px-4 py-3 md:px-6">
-          <div className="flex min-w-0 items-center md:hidden">
-            <MizaniaLogo className="h-8 max-w-[200px]" />
-          </div>
-          <p className="ml-auto hidden text-sm text-muted-foreground md:block md:max-w-xl">
-            Operational salary advances — structured and auditable.
-          </p>
-        </header>
-        <div className="border-b border-border bg-muted/30 px-4 py-2 md:hidden">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <nav className="flex flex-wrap gap-2">
-              {links.map((l) => (
-                <Link
-                  key={l.href}
-                  href={l.href}
-                  className={cn(
-                    "rounded-md px-2 py-1 text-xs font-medium text-muted-foreground",
-                    pathname.startsWith(l.href) && "bg-background text-foreground shadow-sm",
-                  )}
-                >
-                  {l.label}
-                </Link>
-              ))}
-            </nav>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 sm:gap-3">
+              {user ? (
+                <div className="hidden text-right text-xs leading-tight md:block">
+                  <p className="font-medium text-foreground">{user.email}</p>
+                  <p className="text-muted-foreground">
+                    HR · Employer #{user.employer_id ?? "—"}
+                  </p>
+                </div>
+              ) : null}
               <NavbarThemeToggle />
               <Button
                 type="button"
-                size="sm"
                 variant="outline"
+                size="sm"
                 onClick={signOut}
                 className="gap-1.5"
               >
                 <LogOut className="h-3.5 w-3.5" />
-                Sign out
+                <span className="hidden sm:inline">Sign out</span>
               </Button>
             </div>
           </div>
+          <nav
+            aria-label="Workspace"
+            className="-mx-1 flex flex-wrap items-center gap-1 overflow-x-auto pb-1"
+          >
+            {links.map((l) => {
+              const active = isActive(pathname, l.href);
+              return (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  className={cn(
+                    "rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
+                    active &&
+                      "bg-accent text-accent-foreground hover:bg-accent hover:text-accent-foreground",
+                  )}
+                >
+                  {l.label}
+                </Link>
+              );
+            })}
+          </nav>
         </div>
-        <main className="flex-1 p-4 md:p-8">{children}</main>
-      </div>
+      </header>
+      <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 md:py-8">{children}</main>
     </div>
   );
 }

@@ -36,11 +36,36 @@ class EmployeePublic(BaseModel):
     department: str
     salary_millimes: int
     recommended_max_pct: float | None
+    policy_max_pct: float | None = None
+    global_policy_max_pct: float | None = None
     last_scored_at: datetime | None
     opted_in_wallet: bool
 
     class Config:
         from_attributes = True
+
+
+class EmployerPolicyOut(BaseModel):
+    request_cutoff_day_of_month: int | None = None
+    global_policy_max_pct: float | None = None
+
+    class Config:
+        from_attributes = True
+
+
+class EmployerPolicyUpdate(BaseModel):
+    request_cutoff_day_of_month: int | None = Field(default=None, ge=1, le=31)
+    global_policy_max_pct: float | None = Field(default=None, ge=0, le=100)
+
+
+class EmployeePolicyUpdate(BaseModel):
+    """HR override of per-employee max-advance percentage.
+
+    Must be in [0, recommended_max_pct]. Pass null to clear the override and
+    fall back to the model's recommendation.
+    """
+
+    policy_max_pct: float | None = Field(default=None, ge=0, le=100)
 
 
 class AdvanceRequestHR(BaseModel):
