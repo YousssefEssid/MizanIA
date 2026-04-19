@@ -179,7 +179,8 @@ export default function AdminHomePage() {
                 <Label htmlFor="hr-pw">Password</Label>
                 <Input
                   id="hr-pw"
-                  type="text"
+                  type="password"
+                  autoComplete="new-password"
                   minLength={6}
                   value={hrPassword}
                   onChange={(e) => setHrPassword(e.target.value)}
